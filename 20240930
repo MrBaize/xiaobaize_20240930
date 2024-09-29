@@ -1,0 +1,167 @@
+import sys
+import datetime
+import threading
+import time
+import tkinter
+import tkinter as tk #把tkinker改成tk引用
+from ctypes.wintypes import tagMSG
+from tkinter import Button, Label, Entry, Y, RIGHT
+from tkinter.ttk import Progressbar #进度条
+
+#基础框架
+windows_main =tk.Tk() #实例化主窗口
+windows_main.title("tools") #窗口标题
+windows_main.geometry("900x500")#宽×高像素
+#windows_main.minsize(width=500,height=500) #最小窗口限制
+#windows_main.maxsize(width=500,height=500) #最大窗口限制
+windows_main.resizable(0,0) #1=true 0=false
+windows_main.iconbitmap("top.ico") #.ico图标
+windows_main.config(background="#fffdd0") #背景颜色
+windows_main.attributes("-alpha", 0.9) #透明度1-0.1
+windows_main.attributes("-topmost", 1) #置顶
+
+#初始化环境
+IP = None
+telnet = None
+serial = None
+i = 1
+current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+def log_message(message):
+    log.configure(state='normal')  # 使文本框可编辑
+    log.insert(tk.END, message + "\n")  # 在文本框末尾插入日志信息
+    log.configure(state='disabled')  # 使文本框不可编辑
+
+
+
+def long_running_task():
+    for i in range(0,101):
+        current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 在每次循环中获取当前时间
+        if i == 100:
+            log_message(f"{current_datetime} ---------第{101}次执行完成--------------")
+        else:
+            i = i + 1
+            log_message(f"{current_datetime} ---------执行第{i}次--------------")
+            time.sleep(1)
+            log_message(f"{current_datetime} ---------具体功能待开发--------------")
+            time.sleep(1)
+            log_message(f"{current_datetime} ---------初始化设备中--------------")
+            time.sleep(1)
+            log_message(f"{current_datetime} ---------设备环境健康状态遍历--------")
+            time.sleep(1)
+            log_message(f"{current_datetime} ---------健康状态识别--------------")
+            time.sleep(1)
+            log_message(f"{current_datetime} ---------是否保留环境or下1圈测试-----")
+            time.sleep(1)
+
+
+def show_progressbarTwo():
+    for i in range(100):
+        # 每次更新加1
+        progressbarTwo['value'] = i + 1
+        # 更新画面
+        windows_main.update()
+        time.sleep(0.05)
+
+
+
+def login_main():
+    IP = en_ip.get()
+    telnet = en_telnet.get()
+    serial = en_serial.get()
+    num = en_num.get()
+    log_message(f"{current_datetime} ---------开始配置IP环境--------------")
+    log_message(f"{current_datetime} ---------开始检测初始化是否正确--------")
+    log_message(f"{current_datetime} 设置ssh后台IP地址为：{IP}")
+    log_message(f"{current_datetime} 设置telnet前台IP地址为：{telnet}")
+    log_message(f"{current_datetime} 设置telnet前台串口为：{serial}")
+    log_message(f"{current_datetime} 设置执行圈数：{num}")
+    log_message(f"{current_datetime} 登录中......")
+    log_message(f"{current_datetime} ---------登录成功！！！---------------")
+    log_message(f"{current_datetime} ---------开始测试！！！---------------")
+
+
+def run_main():
+    var = varset.get()
+    if var == "reboot":
+        reboot_main()
+    elif var == "poweroff":
+        power_off_main()
+    elif var == "ac":
+        ac_main()
+    elif var == "fw_updowm":
+        fw_updown_main()
+    elif var == "max":
+        max_main()
+    else:
+        log_message(f"请选择测试项")
+
+def reboot_main():
+    log_message(f"reboot_main")
+    login_main()
+    # 创建一个线程来执行长时间运行的任务
+    thread = threading.Thread(target=long_running_task)
+    # 启动线程
+    thread.start()
+
+def power_off_main():
+    log_message(f"poweroff_main")
+    login_main()
+
+def fw_updown_main():
+    log_message(f"fw_updown_main")
+    login_main()
+
+def ac_main():
+    log_message(f"ac_mian")
+    login_main()
+
+def max_main():
+    log_message(f"max_main")
+    login_main()
+
+
+varset = tk.StringVar(windows_main)
+varset.set("先择测试项")
+
+selector = tk.OptionMenu(windows_main, varset, "reboot", "poweroff", "ac","fw_updowm","max")
+selector.place(relx=0.6333, rely=0.0800, relwidth=0.1667, relheight=0.1060)
+
+
+#按钮布局 pack:/place：/grid：网格布局
+btn_start = Button(text="运行",background="#ffe4e1",width=10,height=1,command=run_main)
+btn_start.place(relx=0.4750, rely=0.0800, relwidth=0.1467, relheight=0.1060)
+
+#标签布局
+lb_ip = Label(bg="#fffdd0", text="请输入后台SSH_IP")
+lb_ip.place(relx=0.0000, rely=0.0010, relwidth=0.1717, relheight=0.0600)
+lb_telnet = Label(bg="#fffdd0", text="请输入前台telnet_IP")
+lb_telnet.place(relx=0.0000, rely=0.0680, relwidth=0.1717, relheight=0.0600)
+lb_serial =Label(bg="#fffdd0", text="请输入前台telnet串口")
+lb_serial.place(relx=0.0000, rely=0.1380, relwidth=0.1717, relheight=0.0600)
+lb_num = Label(bg="#fffdd0", text="请输入执行圈数")
+lb_num.place(relx=0.0000, rely=0.2040, relwidth=0.1717, relheight=0.0600)
+
+#输入布局
+en_ip = Entry(bg="#fffdd0")
+en_ip.place(relx=0.2000, rely=0.00100, relwidth=0.2500, relheight=0.0600)
+en_telnet = Entry(bg="#fffdd1")
+en_telnet.place(relx=0.2000, rely=0.0700, relwidth=0.2500, relheight=0.0600)
+en_serial = Entry(bg="#fffdd2")
+en_serial.place(relx=0.2000, rely=0.1380, relwidth=0.2500, relheight=0.0600)
+en_num = Entry(bg="#fffdd2")
+en_num.place(relx=0.2000, rely=0.2040, relwidth=0.2500, relheight=0.0600)
+
+
+# 创建文本框text，
+log=tk.Text(windows_main,height=26)
+log.place(relx=0.0000, rely=0.3560, relwidth=0.9983, relheight=0.6140)
+#进度条
+progressbarTwo = Progressbar(windows_main, orient=tkinter.HORIZONTAL, length=200, mode='determinate')
+progressbarTwo.place(relx=0.0000, rely=0.2800, relwidth=0.9983, relheight=0.0600)
+# 进度值最大值
+progressbarTwo['maximum'] = 100
+# 进度值初始值
+progressbarTwo['value'] = 0
+
+windows_main.mainloop()
