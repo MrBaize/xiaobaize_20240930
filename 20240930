@@ -32,6 +32,37 @@ def log_message(message):
     log.insert(tk.END, message + "\n")  # 在文本框末尾插入日志信息
     log.configure(state='disabled')  # 使文本框不可编辑
 
+import difflib
+file1 = 'E:\\pycharm\\20240908\\pythonProject _20240908\\a.txt'
+file2 = 'E:\\pycharm\\20240908\\pythonProject _20240908\\b.txt'
+
+def compare_files(file1, file2):
+    print(f"文件路径: {file1} 和 {file2}")  # 打印文件路径
+    with open(file1, 'r') as f1, open(file2, 'r',encoding='utf-8') as f2:
+        lines1 = f1.readlines()
+        lines2 = f2.readlines()
+
+    # 使用ndiff函数逐行比较
+    diff_lines = difflib.ndiff(lines1, lines2)
+
+    # 检查是否有差异
+    has_difference = False
+    for line in diff_lines:
+        if line.startswith('- ') or line.startswith('+ '):
+            has_difference = True
+            break
+    if not has_difference:
+        log_message("pass")  # 如果没有差异，输出pass
+    else:
+        log_message("fail")
+    diff_lines = difflib.ndiff(lines1, lines2)
+    for i, line in enumerate(diff_lines, start=1):
+        if line.startswith('- '):
+            log_message(f"{file1} -> 第{i}行 原始日志: {line.strip()}")
+        elif line.startswith('+ '):
+            log_message(f"{file2} -> 第{i}行 新增日志: {line.strip()}")
+    log_message(f"测试环境将会保留现场12H，请检查log!! -> {file2}")
+
 
 
 def long_running_task():
@@ -53,6 +84,8 @@ def long_running_task():
             time.sleep(1)
             log_message(f"{current_datetime} ---------是否保留环境or下1圈测试-----")
             time.sleep(1)
+            diff_test = threading.Thread(target=compare_files(file1, file2))
+            diff_test.start()
 
 
 def show_progressbarTwo():
@@ -103,6 +136,7 @@ def reboot_main():
     thread = threading.Thread(target=long_running_task)
     # 启动线程
     thread.start()
+
 
 def power_off_main():
     log_message(f"poweroff_main")
