@@ -5,7 +5,7 @@ import time
 import tkinter
 import tkinter as tk #把tkinker改成tk引用
 from ctypes.wintypes import tagMSG
-from tkinter import Button, Label, Entry, Y, RIGHT
+from tkinter import Button, Label, Entry, Y, RIGHT, ttk
 from tkinter.ttk import Progressbar #进度条
 
 #基础框架
@@ -26,6 +26,7 @@ telnet = None
 serial = None
 i = 1
 current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
 def log_message(message):
     log.configure(state='normal')  # 使文本框可编辑
@@ -187,9 +188,24 @@ en_num = Entry(bg="#fffdd2")
 en_num.place(relx=0.2000, rely=0.2040, relwidth=0.2500, relheight=0.0600)
 
 
+# 创建一个Frame作为容器
+frame = tk.Frame(windows_main,height=26)
+frame.place(relx=0.0000, rely=0.3560, relwidth=0.9983, relheight=0.6140)
+# 垂直滚动条
+vsb = tk.Scrollbar(frame, orient="vertical")
+vsb.pack(side="right", fill="y")
+# 水平滚动条
+hsb = tk.Scrollbar(frame, orient="horizontal")
+hsb.pack(side="bottom", fill="x")
 # 创建文本框text，
-log=tk.Text(windows_main,height=26)
-log.place(relx=0.0000, rely=0.3560, relwidth=0.9983, relheight=0.6140)
+log=tk.Text(frame,height=26,yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+#log.place(relx=0.0000, rely=0.0000, relwidth=0.9983, relheight=0.9990)
+log.pack(side="left", fill="both", expand=True)
+
+# 配置垂直和水平滚动条，使之与文本框关联
+vsb.config(command=log.yview)
+hsb.config(command=log.xview)
+
 #进度条
 progressbarTwo = Progressbar(windows_main, orient=tkinter.HORIZONTAL, length=200, mode='determinate')
 progressbarTwo.place(relx=0.0000, rely=0.2800, relwidth=0.9983, relheight=0.0600)
